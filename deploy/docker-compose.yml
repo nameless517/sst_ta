@@ -1,0 +1,12 @@
+version: '3.7'  
+  
+services:  
+  test-swarm-service-1:  
+    image: python:3.11-alpine  
+    command: python3 -m http.server 8888 -d /  
+    ports:  
+      - "8888:8888"  
+    deploy:  
+      replicas: 1  
+      restart_policy:  
+        condition: any
