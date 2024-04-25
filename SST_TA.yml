@@ -1,10 +1,7 @@
 ---
 - name: SST_OPS_TA
-  hosts: localhost
-  vars:
-    DEPLOY_TARGET: "localhost"
-    COMPOSE_FILE_PATH: "{{ ansible_env.PWD }}/deploy/docker-compose.yml"
-    STACK_NAME: "SST_TA"
+  hosts: "{{ ansible_env.DEPLOY_TARGET }}"
+  gather_facts: false
   tasks:
     - name: Copy compose file to target machine
       copy:
@@ -13,8 +10,8 @@
         remote_src: yes
 
     - name: Deploy Swarm stack and check status
-      shell: |
-        docker stack deploy --with-registry-auth -c /tmp/{{ COMPOSE_FILE_PATH | basename }} {{ STACK_NAME }}
-        docker stack services {{ STACK_NAME }}
+      ansible.builtin.docker_swarm_stack:
+        name: "{{ STACK_NAME}}"
+        compose_file: "{{ COMPOSE_FILE_PATH | basename }}"
+        state: present
       register: deploy_output
-      ignore_errors: true
